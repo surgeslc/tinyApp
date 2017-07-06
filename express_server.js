@@ -5,6 +5,9 @@ var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 app.set("view engine", "ejs")
 
 var urlDatabase = {
@@ -89,24 +92,20 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+app.post("/login", (req, res) => {
+  let username = req.body.username;
+  console.log("username from form:", req.body.username);
+  res.cookie.username = username;
+  res.redirect("/urls");
+})
+
 app.post("/register", (req, res) => {
   let userID = generateRandomString();
   let email = req.body.email;
   let password = req.body.password;
   users[userID] = {id: userID, email: email, password: password};
   console.log(users);
-  //console.log("req.body:", req.body);
-  //console.log("userID:",userID);
-  //console.log("email:", email);
-  //console.log("password:", password);
-  // urlDatabase[shortURL] = req.body["longURL"];
-  //console.log(urlDatabase);
-  //res.status(301);
-  //res.send("Redirecting to http://localhost:8080/urls/" + shortURL);
-  res.writeHead(301,
-  {Location: 'http://localhost:8080/urls/'}
-  );
-  res.end();
+  res.redirect("/urls");
 });
 
 app.post("/urls", (req, res) => {
