@@ -12,6 +12,29 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  },
+  "user3RandomID": {
+    id: "user3RandomID",
+    email: "hilary@hilarymackey.ca",
+    password: "funny-bunny"
+  },
+  "user4RandomID": {
+    id: "user4RandomID",
+    email: "lawrence@lawrencesurges.ca",
+    password: "funny-bunny"
+  }
+};
+
 function generateRandomString() {
   var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
   var string_length = 6;
@@ -27,6 +50,12 @@ function generateRandomString() {
 
 app.get("/", (req, res) => {
   res.end("Hello!");
+});
+
+app.get("/register", (req, res) => {
+  //let templateVars = { urls: urlDatabase };
+  //console.log(templateVars);
+  res.render("register");
 });
 
 app.get("/urls", (req, res) => {
@@ -58,6 +87,26 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+});
+
+app.post("/register", (req, res) => {
+  let userID = generateRandomString();
+  let email = req.body.email;
+  let password = req.body.password;
+  users[userID] = {id: userID, email: email, password: password};
+  console.log(users);
+  //console.log("req.body:", req.body);
+  //console.log("userID:",userID);
+  //console.log("email:", email);
+  //console.log("password:", password);
+  // urlDatabase[shortURL] = req.body["longURL"];
+  //console.log(urlDatabase);
+  //res.status(301);
+  //res.send("Redirecting to http://localhost:8080/urls/" + shortURL);
+  res.writeHead(301,
+  {Location: 'http://localhost:8080/urls/'}
+  );
+  res.end();
 });
 
 app.post("/urls", (req, res) => {
