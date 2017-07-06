@@ -44,6 +44,8 @@ app.get("/u/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   //console.log("shortURL:", shortURL);
   let longURL = urlDatabase[shortURL];
+    //if (longURL = undefined)
+      //res.redirect('http://localhost:8080/urls');
   //console.log("longURL:", longURL);
   res.redirect(longURL);
 });
