@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>TinyApp</title>
+  <% include partials/_header %>
 </head>
 <body>
     <!-- Add your EJS code here -->
-    <!-- li works, but maybe use a table -->
-    <!-- Need a link for new URLs to shorten -->
-    <!-- which sounds like an <a>
-  <% for (url in urls)  { %>
-    <li>
-      <%= urls[url] %>
-      <%= url %>
-    </li>
-  <% } %>
+    <table border="2">
+      <tr>
+        <th>URL</th>
+        <th>Short URL</th>
+      </tr>
+      <% for (url in urls) { %>
+      <tr>
+        <td><a href=""><%=urls[url]%></a></td>
+        <td><%=url%></td>
+      </tr>
+      <% } %>
+    </table>
 </body>
 </html>

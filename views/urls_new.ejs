@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <% include partials/_header %>
+      <script>
+      $('.my-form').on('submit', function () {
+        //Should check for a period (.) in the URL, then
+        //POST request to /urls, and generate a shortURL
+        console.log("New String:", generateRandomString());
+        //Add shortURL & longURL to urlDatabase as a key-value pair
+        //Server redirects and client requests (GETS)
+        //http://localhost:8080/urls/<shortURL>
+      return true;
+});
+</script>
+  </head>
+  <body style="font-size:20px; padding:50px;">
+    <% include partials/_header %>
+    <form action="/urls" method="POST" style="margin:150px;">
+      <label for="longURL">Enter a URL:</label>
+      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+</html>
