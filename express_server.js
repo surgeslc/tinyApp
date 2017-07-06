@@ -20,7 +20,7 @@ function generateRandomString() {
     var rnum = Math.floor(Math.random() * chars.length);
     randomstring += chars.substring(rnum,rnum+1);
   }
-  console.log(randomstring);
+  //console.log(randomstring);
   return randomstring;
 }
 //generateRandomString();
@@ -40,6 +40,14 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  let shortURL = req.params.shortURL;
+  //console.log("shortURL:", shortURL);
+  let longURL = urlDatabase[shortURL];
+  //console.log("longURL:", longURL);
+  res.redirect(longURL);
+});
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, URL: urlDatabase[req.params.id] };
   // console.log("urls/:id:", templateVars);
@@ -52,13 +60,16 @@ app.get("/urls.json", (req, res) => {
 
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
-  //const URL = req.body;
-  //console.log(req.body);
-  console.log("Short:",shortURL);  // debug statement to see POST parameters
-  console.log("Long:", req.body.longURL);
+  //console.log("Short:",shortURL);  // debug statement to see POST parameters
+  //console.log("Long:", req.body.longURL);
   urlDatabase[shortURL] = req.body["longURL"];
-  console.log(urlDatabase);
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  //console.log(urlDatabase);
+  //res.status(301);
+  //res.send("Redirecting to http://localhost:8080/urls/" + shortURL);
+  res.writeHead(301,
+  {Location: 'http://localhost:8080/urls/' + shortURL}
+  );
+  res.end();
 });
 
 app.get("/hello", (req, res) => {

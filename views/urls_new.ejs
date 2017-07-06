@@ -4,12 +4,6 @@
       <% include partials/_header %>
       <script>
       $('.my-form').on('submit', function () {
-        //Should check for a period (.) in the URL, then
-        //POST request to /urls, and generate a shortURL
-        console.log("New String:", generateRandomString());
-        //Add shortURL & longURL to urlDatabase as a key-value pair
-        //Server redirects and client requests (GETS)
-        //http://localhost:8080/urls/<shortURL>
       return true;
 });
 </script>
