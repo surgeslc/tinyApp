@@ -8,12 +8,16 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
+//const ejsLint = require('ejs-lint');
+//app.use(ejslint());
+
 app.set("view engine", "ejs")
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+//console.log(urlDatabase);
 
 const users = {
   "userRandomID": {
@@ -38,6 +42,7 @@ const users = {
   }
 };
 
+/* HELPER FUNCTION(S) */
 function generateRandomString() {
   const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
   const string_length = 6;
@@ -61,6 +66,8 @@ app.get("/register", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  console.log("templateVars:", templateVars);
+  //ejslint("urls_index");
   res.render("urls_index", templateVars);
 });
 
@@ -117,6 +124,11 @@ app.post("/urls", (req, res) => {
   {Location: 'http://localhost:8080/urls/' + shortURL}
   );
   res.end();
+});
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
 });
 
 app.get("/hello", (req, res) => {
