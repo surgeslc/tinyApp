@@ -93,9 +93,11 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+  console.log("req.body:", req.body);
   let username = req.body.username;
-  console.log("username from form:", req.body.username);
-  res.cookie.username = username;
+  //console.log("username from form:", req.body.username);
+  res.cookie(username, username);
+  //console.log("cookie username:", res.cookie.username);
   res.redirect("/urls");
 })
 
@@ -104,7 +106,7 @@ app.post("/register", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   users[userID] = {id: userID, email: email, password: password};
-  console.log(users);
+  //console.log(users);
   res.redirect("/urls");
 });
 
