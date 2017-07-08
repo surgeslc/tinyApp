@@ -10,6 +10,7 @@
       <tr>
         <td><%=url%> &#8594;</td>
         <td><%=urls[url]%></td>
+        <td><a href="/urls/<%=url%>">Edit</a></td>
         <td>
           <form action="/urls/<%=url%>/delete" method="POST">
             <input type="submit" value="Delete"></input>

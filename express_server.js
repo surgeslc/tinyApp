@@ -55,6 +55,7 @@ function generateRandomString() {
 }
 
 /* ROUTES */
+/* gets */
 app.get("/", (req, res) => {
   res.end("Hello!");
 });
@@ -93,6 +94,7 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+/* posts */
 app.post("/login", (req, res) => {
   let username = req.body.username;
   let templateVars = {
@@ -131,10 +133,18 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/urls/:id/update", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  console.log(urlDatabase);
+  res.redirect("/urls");
+});
+
+/* Kept for Testing - candidate for removal */
 app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp is listening on port ${PORT}!`);
 });

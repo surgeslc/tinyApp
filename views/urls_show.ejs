@@ -4,7 +4,11 @@
   <% include partials/_header %></head>
 <body>
     <!-- Add your EJS code here -->
-    <h1><%= URL %></h1>
-    <h2><%= shortURL %></h2>
+    <h3>ShortURL: <%= shortURL %></h3>
+    <form action="/urls/<%= shortURL %>/update" method="POST" >
+      <p>Edit and Update the URL:</p>
+      <input id="longURL" type="text" name="longURL" value="<%=URL %>" style="width: 300px">
+      <input type="submit" value="Update"></input>
+    </form>
 </body>
 </html>
