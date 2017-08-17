@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head></head>
-  <body style="font-size:20px; padding:50px;">
-    <% include partials/_header %>
-    <form action="/register" method="POST" style="margin:150px;">
-      <label for="user">Enter Email Address:</label>
-      <input id="email" type="email" name="email" placeholder="user@example.com" style="width: 300px">
-      <label for="user">Enter a Password:</label>
-      <input id="password" type="password" name="password" placeholder="password" style="width: 300px">
+  <head>
+    <title>TinyApp</title>
+  </head>
+  <body style="font-size:18px; padding:60px;">
+    <h4>Register</h4>
+    <form action="/register" method="POST" style="margin:3em;">
+      <div style="margin: 0.5em">
+        <label for="user">Email Address:</label>
+        <input id="email" type="email" name="email" placeholder="user@example.com" style="width: 150px">
+        <label for="user">Password:</label>
+        <input id="password" type="password" name="password" placeholder="password" style="width: 150px">
+      </div>
       <input type="submit" value="Submit">
     </form>
   </body>

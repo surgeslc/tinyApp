@@ -1,8 +1,9 @@
-// Requirements & Uses
+// Requirements & Constants
 
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
+const appName = 'TinyApp';
 
 const bcrypt = require('bcrypt');
 
@@ -14,8 +15,8 @@ app.use(cookieParser());
 
 const cookieSession = require('cookie-session');
 app.use(cookieSession({
-  userId: 'session',
-  keys: ['freddy', 'frog']
+  secret:'freddyfrog',
+  maxAge: 24 * 60 * 60 * 1000
 }));
 
 //const ejsLint = require('ejs-lint');
@@ -28,21 +29,15 @@ var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-//console.log(urlDatabase);
 
-const users = {
+// User database model
+let users = {
   "user3RandomID": {
     id: "user3RandomID",
     email: "hilary@hilarymackey.ca",
     password: "funny-bunny"
-  },
-  "user4RandomID": {
-    id: "user4RandomID",
-    email: "lawrence@lawrencesurges.ca",
-    password: bcrypt.hashSync("funny-bunny", 10)
   }
 };
-
 
 /* HELPER FUNCTION(S) */
 
@@ -74,6 +69,15 @@ function generateRandomString() {
   return randomstring;
 }
 
+function findUser(username, password){
+  for (user in users){
+    if (username === users[user].email && bcrypt.compareSync(password, users[user].password)){
+      return users[user];
+    }
+  }
+  return undefined;
+}
+
 const getEmailById = (userID) => {
   let user = users[userID];
   if (!users) {
@@ -98,13 +102,33 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
-app.get("/register", (req, res) => {
-  if (req.session.userId) {
-    res.redirect("/urls");
+app.get("/login", (req, res) => {
+  let loggedIn = Boolean(req.session.userId);
+  if(!loggedIn){
+    let templateVars = {
+      users: {
+        id: "",
+        email: ""
+      }
+    };
+    res.render("login", templateVars);
     return;
   } else {
-    let userEmail = getEmailById(req.session.userId);
-    let templateVars = { userEmail: userEmail };
+    res.redirect("/");
+  }
+});
+
+app.get("/register", (req, res) => {
+  let loggedIn = Boolean(req.session.userId);
+  if(loggedIn){
+    res.redirect("/urls");
+  } else {
+    let templateVars = {
+      user: {
+        id: "",
+        email: ""
+      }
+    };
     res.render("register", templateVars);
   }
 });
@@ -139,35 +163,26 @@ app.get("/urls.json", (req, res) => {
 });
 
 /* posts */
-app.post("/login", (req, res) => {
-  let username = req.body.username;
-  let templateVars = {
-    username: username
-    // ... any other vars
-  };
-  res.cookie("username", username);
-  res.redirect("/urls");
-})
-
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  req.session = null;
   res.redirect("/urls");
-})
+});
 
 app.post("/register", (req, res) => {
   let userID = generateRandomString();
   let email = req.body.email;
   let password = req.body.password;
+  console.log(userID, email, password);
   if ((email = "") || (password = "")) {
     alert("Email address and password are required");
     res.render("/register");
-  } else if (Object.values(users).indexOf(req.body.email) > -1) {
-    // Email address is already in users
-    alert("Sorry,", email, "was registered by another user");
+  } else if (1 < 0) {
+    // Email address already in users
+    alert("Sorry,", email, "was already registered");
     res.render("/register");
   } else {
     users[userID] = {id: userID, email: email, password: password};
-    let templateVars = {username: req.cookies["username"] };
+    let templateVars = {userID: req.cookies["userID"] };
     console.log("templateVars:", templateVars);
     res.redirect("/urls");
   }
@@ -200,5 +215,5 @@ app.get("/hello", (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`TinyApp is listening on port ${PORT}!`);
+  console.log(appName, `is listening on port ${PORT}!`);
 });

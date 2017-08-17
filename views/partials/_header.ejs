@@ -3,16 +3,15 @@
 <meta charset="UTF-8">
 <title>Tiny App</title>
 
-<% if (!username) { %>
-<h4>Please log in!</h4>
-<form action="/login" method="POST" style="margin:50px;">
-  <label for="username">Enter a username:</label>
-  <input id="username" type="text" name="username" placeholder="username" style="width: 300px">
-  <input type="submit" value="Submit">
-</form>
-<% } else { %>
-<h4>Current user: <%= username %> </h4>
-<form action="/logout" method="POST" style="margin:50px;">
-  <input type="submit" value="Logout">
-</form>
-<% } %>
+<div >
+  <nav>
+    <ul >
+      <li><a href="/">Home</a></li>
+      <li><a href="/login">Login</a></li>
+      <li><a href="#"><%= userObject.email %></a></li>
+      <li><a href="/register">Register</a></li>
+      <li<a href="/logout">Logout</a></li>
+    </ul>
+  </nav>
+  <h3>TinyApp</h3>
+</div>
