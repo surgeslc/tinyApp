@@ -1,0 +1,20 @@
+{
+  "name": "tinyApp",
+  "version": "1.0.0",
+  "description": "A JavaScript URL shortener project for Lighthouse Labs",
+  "main": "express_server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Lawrence Surges",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "ejs": "^2.5.7",
+    "express": "^4.15.4",
+    "express-flash-messages": "^0.1.1",
+    "express-session": "^1.14.1"
+  }
+}

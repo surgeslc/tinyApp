@@ -4,6 +4,9 @@
     <title>TinyApp</title>
   </head>
   <body style="font-size:18px; padding:60px;">
+    <% if (typeof messages != ‘undefined’ && messages.notify) { %>
+      "I have a message"
+      <% } %>
     <h4>Register</h4>
     <form action="/register" method="POST" style="margin:3em;">
       <div style="margin: 0.5em">

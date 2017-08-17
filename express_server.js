@@ -4,7 +4,8 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const appName = 'TinyApp';
-
+const flash = require('express-flash-messages');
+app.use(flash());
 const bcrypt = require('bcrypt');
 
 const bodyParser = require("body-parser");
@@ -121,20 +122,20 @@ app.get("/login", (req, res) => {
 app.get("/register", (req, res) => {
   let loggedIn = Boolean(req.session.userId);
   if(loggedIn){
-    res.redirect("/urls");
+  res.redirect("/urls");
   } else {
     let templateVars = {
       user: {
-        id: "",
-        email: ""
-      }
-    };
-    res.render("register", templateVars);
+      id: "",
+      email: ""
+    }
+  };
+  res.render("register", templateVars);
   }
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  let templateVars = { urls: urlDatabase, username: req.cookies["user_id"] };
   console.log("templateVars:", templateVars);
   //ejslint("urls_index");
   res.render("urls_index", templateVars);
@@ -142,7 +143,7 @@ app.get("/urls", (req, res) => {
 
 // Must precede "urls/:id"
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["username"] };
+  let templateVars = { username: req.cookies["user_id"] };
   res.render("urls_new", templateVars);
 });
 
@@ -169,20 +170,26 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  let userID = generateRandomString();
   let email = req.body.email;
   let password = req.body.password;
-  console.log(userID, email, password);
-  if ((email = "") || (password = "")) {
-    alert("Email address and password are required");
-    res.render("/register");
+  //console.log(userID, req.body.email, req.body.password);
+
+  if ((email === "") || (password === "")) {
+    flash('notify', 'This is a test notification.');
+    console.log("Email address and password are required");
+    res.render("register");
   } else if (1 < 0) {
     // Email address already in users
-    alert("Sorry,", email, "was already registered");
-    res.render("/register");
+    // Want to use alert, but console.log for now
+    console.log("Sorry,", email, "was already registered");
+    res.render("register");
   } else {
+    // Add the new user to the users object
+    let userID = generateRandomString();
     users[userID] = {id: userID, email: email, password: password};
-    let templateVars = {userID: req.cookies["userID"] };
+    // Confirm an addition
+    console.log("users:", users);
+    let templateVars = {user_ID: req.cookies["userID"] };
     console.log("templateVars:", templateVars);
     res.redirect("/urls");
   }
