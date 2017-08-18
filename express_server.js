@@ -4,8 +4,7 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const appName = 'TinyApp';
-const flash = require('express-flash-messages');
-app.use(flash());
+
 const bcrypt = require('bcrypt');
 
 const bodyParser = require("body-parser");
@@ -19,6 +18,18 @@ app.use(cookieSession({
   secret:'freddyfrog',
   maxAge: 24 * 60 * 60 * 1000
 }));
+
+// const session = require('express-session');
+// app.use(session({
+//   secret: 'freddyfrog',
+//   resave: false,
+//   saveUninitialized: true,
+//   maxAge: 24 * 60 * 60 * 1000
+// }))
+
+// const flash = require('express-flash-messages');
+// app.use(flash());
+
 
 //const ejsLint = require('ejs-lint');
 //app.use(ejslint());
@@ -59,6 +70,7 @@ const doesEmailExist = (emailIn) => {
 };
 
 // Inconsistent capitalization - can't correct here alone without consequences
+// Called to generate unique userIDs and shortURLs
 function generateRandomString() {
   const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
   const string_length = 6;
@@ -174,9 +186,12 @@ app.post("/register", (req, res) => {
   let password = req.body.password;
   //console.log(userID, req.body.email, req.body.password);
 
-  if ((email === "") || (password === "")) {
-    flash('notify', 'This is a test notification.');
-    console.log("Email address and password are required");
+  if (email === "" || password === "") {
+    let templateVars = {
+      message: "Email or Password empty"
+    };
+    res.render("error", templateVars);
+    return;
     res.render("register");
   } else if (1 < 0) {
     // Email address already in users
@@ -185,12 +200,16 @@ app.post("/register", (req, res) => {
     res.render("register");
   } else {
     // Add the new user to the users object
+    const encryptedPassword = bcrypt.hashSync(req.body.password, 10);
     let userID = generateRandomString();
-    users[userID] = {id: userID, email: email, password: password};
+    users[userID] = {
+      id: userID,
+      email: email,
+      password: encryptedPassword
+    };
     // Confirm an addition
     console.log("users:", users);
-    let templateVars = {user_ID: req.cookies["userID"] };
-    console.log("templateVars:", templateVars);
+    req.session.userId = users[userID];
     res.redirect("/urls");
   }
 });
