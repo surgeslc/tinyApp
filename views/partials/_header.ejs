@@ -3,15 +3,19 @@
 <meta charset="UTF-8">
 <title>Tiny App</title>
 
-<div >
+<div>
   <nav>
-    <ul >
+    <ul>
       <li><a href="/">Home</a></li>
-      <li><a href="/login">Login</a></li>
-      <li><a href="#"><%= userObject.email %></a></li>
-      <li><a href="/register">Register</a></li>
-      <li<a href="/logout">Logout</a></li>
     </ul>
   </nav>
   <h3>TinyApp</h3>
+  <% if (typeof user_id === "undefined") { %>
+    <h4>Please <a href="/login">Login</a> or <a href="/register">Register</a></h4>
+  <% } else{ %>
+      <h4>User is: <%= user_id %> </h4>
+      <form action="/logout" method="POST">
+        <input type="submit" value="Logout">
+      </form>
+  <% } %>
 </div>

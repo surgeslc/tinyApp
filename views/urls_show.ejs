@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <body>
+    <% include partials/_header %>
     <!-- Add your EJS code here -->
     <h3>ShortURL: <%= shortURL %></h3>
     <form action="/urls/<%= shortURL %>/update" method="POST" >

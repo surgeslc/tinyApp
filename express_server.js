@@ -19,13 +19,15 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000
 }));
 
-// const session = require('express-session');
-// app.use(session({
-//   secret: 'freddyfrog',
-//   resave: false,
-//   saveUninitialized: true,
-//   maxAge: 24 * 60 * 60 * 1000
-// }))
+let user_id = "";
+
+const session = require('express-session');
+app.use(session({
+  secret: 'freddyfrog',
+  resave: false,
+  saveUninitialized: true,
+  maxAge: 24 * 60 * 60 * 1000
+}))
 
 // const flash = require('express-flash-messages');
 // app.use(flash());
@@ -116,7 +118,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  let loggedIn = Boolean(req.session.userId);
+  let loggedIn = Boolean(req.session.user_id);
   if(!loggedIn){
     let templateVars = {
       users: {
@@ -147,15 +149,15 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies["user_id"] };
-  console.log("templateVars:", templateVars);
+  let templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"] };
+  //console.log("templateVars:", templateVars);
   //ejslint("urls_index");
   res.render("urls_index", templateVars);
 });
 
 // Must precede "urls/:id"
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["user_id"] };
+  let templateVars = { user_id: req.cookies["user_id"] };
   res.render("urls_new", templateVars);
 });
 
@@ -167,7 +169,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, URL: urlDatabase[req.params.id],
-    username: req.cookies["username"] };
+    user_id: req.cookies["user_id"] };
   res.render("urls_show", templateVars);
 });
 
@@ -177,7 +179,7 @@ app.get("/urls.json", (req, res) => {
 
 /* posts */
 app.post("/logout", (req, res) => {
-  req.session = null;
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
@@ -188,11 +190,13 @@ app.post("/register", (req, res) => {
 
   if (email === "" || password === "") {
     let templateVars = {
-      message: "Email or Password empty"
+      email: email,
+      password: password,
     };
-    res.render("error", templateVars);
-    return;
-    res.render("register");
+    res.status(400).send('Email or password was empty');
+    res.render("register", templateVars);
+    //return;
+    //res.render("register");
   } else if (1 < 0) {
     // Email address already in users
     // Want to use alert, but console.log for now
@@ -207,9 +211,22 @@ app.post("/register", (req, res) => {
       email: email,
       password: encryptedPassword
     };
+    let user = users[userID];
+    user_id = user["id"];
+    //console.log("user_id:", user_id);
+    let templateVars = {
+      user_id: user_id
+    }
+    //console.log(user);
     // Confirm an addition
-    console.log("users:", users);
-    req.session.userId = users[userID];
+    //console.log("users:", users);
+    //res.cookie(user_id, user.userID);
+    //req.session.userId = users[userID];
+    //req.session.userId = users[userID];
+    //req.session.userID = users[userID];
+    res.cookie("user_id", user_id);
+    //console.log("user_id:", user_id);
+    //console.log("session userID:", req.session.username)
     res.redirect("/urls");
   }
 });
@@ -230,7 +247,7 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls/:id/update", (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL;
-  console.log(urlDatabase);
+  //console.log(urlDatabase);
   res.redirect("/urls");
 });
 
