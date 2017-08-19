@@ -8,7 +8,7 @@ This is a project by [Lawrence Surges]"https://github.com/surgeslc" for a Web De
 
 The app allows users to create, read, update and delete shortened URLs, and to search. It also provides for user registrations, logins, and logouts, while preventing two users from registering with the same email address.
 
-Styling remains to be applied, and code will continue to be refactored.
+User Specific Features have not been implemented, styling remains to be applied, and code will continue to be refactored.
 
 <h2>Expected Usage</h2>
 
