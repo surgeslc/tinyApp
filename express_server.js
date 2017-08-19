@@ -62,7 +62,7 @@ const checkPassword = (emailIn, passwordIn) => {
   return false;
 }
 
-const doesEmailExist = (emailIn) => {
+function doesEmailExist(emailIn) {
   for(user in users) {
     if (users[user].email === emailIn) {
       return true;
@@ -114,7 +114,7 @@ const getIdByEmail = (emailIn) => {
 /* ROUTES */
 /* gets */
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  res.end("<html><head><title>TinyApp</title></head><body><h1>TinyApp</h1><p>This is a URL shortening app. Continue to view <a href='/urls'>urls</a> or see its README <a href='https://github.com/surgeslc/tinyApp'>here</a>.</body></html>");
 });
 
 app.get("/login", (req, res) => {
@@ -186,48 +186,36 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
-  //console.log(userID, req.body.email, req.body.password);
 
   if (email === "" || password === "") {
     let templateVars = {
       email: email,
       password: password,
     };
-    res.status(400).send('Email or password was empty');
-    res.render("register", templateVars);
-    //return;
-    //res.render("register");
-  } else if (1 < 0) {
-    // Email address already in users
-    // Want to use alert, but console.log for now
-    console.log("Sorry,", email, "was already registered");
-    res.render("register");
-  } else {
-    // Add the new user to the users object
-    const encryptedPassword = bcrypt.hashSync(req.body.password, 10);
-    let userID = generateRandomString();
-    users[userID] = {
-      id: userID,
-      email: email,
-      password: encryptedPassword
-    };
-    let user = users[userID];
-    user_id = user["id"];
-    //console.log("user_id:", user_id);
-    let templateVars = {
-      user_id: user_id
-    }
-    //console.log(user);
-    // Confirm an addition
-    //console.log("users:", users);
-    //res.cookie(user_id, user.userID);
-    //req.session.userId = users[userID];
-    //req.session.userId = users[userID];
-    //req.session.userID = users[userID];
-    res.cookie("user_id", user_id);
-    //console.log("user_id:", user_id);
-    //console.log("session userID:", req.session.username)
-    res.redirect("/urls");
+    // Email and/or Password field was empty
+    res.status(400);
+    return res.end("<html><head><title>TinyApp</title></head><body><h1>Error: Missing Information</h1><p>Email address and password are both required. <a href='/register'>Register</a> or <a href='/login'>login</a>.</body></html>\n");
+  } else if (doesEmailExist(email)) {
+      // Function returned true because email address was already in users
+      res.status(400);
+      return res.end("<html><head><title>TinyApp</title></head><body><h1>Error: Email Address</h1><p>Sorry, that email address is already registered. Please <a href='/register'>Register</a> or <a href='/login'>login</a>.</body></html>\n");
+    } else {
+      // Add the new user to the users object
+      const encryptedPassword = bcrypt.hashSync(req.body.password, 10);
+      let userID = generateRandomString();
+      users[userID] = {
+        id: userID,
+        email: email,
+        password: encryptedPassword
+      };
+      let user = users[userID];
+      user_id = user["id"];
+      let templateVars = {
+        user_id: user_id
+      }
+      // Set user_id cookie and redirect
+      res.cookie("user_id", user_id);
+      res.redirect("/urls");
   }
 });
 
@@ -247,13 +235,7 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls/:id/update", (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL;
-  //console.log(urlDatabase);
   res.redirect("/urls");
-});
-
-/* Kept for Testing - candidate for removal */
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 
