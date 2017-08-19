@@ -29,16 +29,9 @@ app.use(session({
   maxAge: 24 * 60 * 60 * 1000
 }))
 
-// const flash = require('express-flash-messages');
-// app.use(flash());
-
-
-//const ejsLint = require('ejs-lint');
-//app.use(ejslint());
-
 app.set("view engine", "ejs")
 
-//
+// Initial URL Database
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -55,7 +48,7 @@ let users = {
 
 /* HELPER FUNCTION(S) */
 
-const checkPassword = (emailIn, passwordIn) => {
+function checkPassword(emailIn, passwordIn) {
   if (bcrypt.compareSync(passwordIn, users[getIdByEmail(emailIn)].password)) {
     return true;
   }
@@ -101,7 +94,7 @@ const getEmailById = (userID) => {
   return user.email;
 };
 
-const getIdByEmail = (emailIn) => {
+function getIdByEmail(emailIn) {
   let id = undefined;
   for(user in users) {
     if (users[user].email === emailIn) {
@@ -114,7 +107,7 @@ const getIdByEmail = (emailIn) => {
 /* ROUTES */
 /* gets */
 app.get("/", (req, res) => {
-  res.end("<html><head><title>TinyApp</title></head><body><h1>TinyApp</h1><p>This is a URL shortening app. Continue to view <a href='/urls'>urls</a> or see its README <a href='https://github.com/surgeslc/tinyApp'>here</a>.</body></html>");
+  res.end("<html><head><title>TinyApp</title></head><body><h1>TinyApp</h1><p>This is a URL shortening app. <a href='/login'>Login</a>, <a href='/register'>register</a>, or see its README <a href='https://github.com/surgeslc/tinyApp'>here</a>.</body></html>");
 });
 
 app.get("/login", (req, res) => {
@@ -173,9 +166,9 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
 
 /* posts */
 app.post("/logout", (req, res) => {
@@ -183,36 +176,51 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/login", (req, res) => {
+  let email = req.body.email;
+  let password = req.body.password;
+  // Try to match a user to the email submitted.
+  // If none's found, return a response with a 403 status code.
+  if (!doesEmailExist(email)) {
+    // Email address wasn't in users
+    res.status(403);
+    return res.end("<html><head><title>TinyApp</title></head><body><h1>Error: Email Address Not Found</h1><p>Sorry, no user is registered with that email address. Please <a href='/register'>register</a> or <a href='/login'>login</a>.</body></html>");
+  } else if (users[getIdByEmail(email)].password === bcrypt.hashSync(req.body.password, 10)) {
+    // Email address was in users; passwords matched
+      user_id = users[getIdByEmail(email)];
+      let templateVars = { user_id: user_id }
+      // Set user_id cookie and redirect
+      res.status(200);
+      res.cookie("user_id", user_id);
+      res.redirect("/");
+    } else {
+    // Email address was in users, but passwords didn't match
+    res.status(400);
+    return res.end("<html><head><title>TinyApp</title></head><body><h1>Error: Invalid Input</h1><p>The email/password combination can't be matched to a user. <a href='/register'>Register</a> or <a href='/login'>login</a>.</body></html>");
+  }
+});
+
 app.post("/register", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
 
   if (email === "" || password === "") {
-    let templateVars = {
-      email: email,
-      password: password,
-    };
+    let templateVars = { email: email, password: password };
     // Email and/or Password field was empty
     res.status(400);
-    return res.end("<html><head><title>TinyApp</title></head><body><h1>Error: Missing Information</h1><p>Email address and password are both required. <a href='/register'>Register</a> or <a href='/login'>login</a>.</body></html>\n");
+    return res.end("<html><head><title>TinyApp</title></head><body><h1>Error: Missing Information</h1><p>Email address and password are both required. <a href='/register'>Register</a> or <a href='/login'>login</a>.</body></html>");
   } else if (doesEmailExist(email)) {
-      // Function returned true because email address was already in users
+      // Function returned true as email address was already in users
       res.status(400);
-      return res.end("<html><head><title>TinyApp</title></head><body><h1>Error: Email Address</h1><p>Sorry, that email address is already registered. Please <a href='/register'>Register</a> or <a href='/login'>login</a>.</body></html>\n");
+      return res.end("<html><head><title>TinyApp</title></head><body><h1>Error: Email Address</h1><p>Sorry, that email address is already registered. Please <a href='/register'>register</a> or <a href='/login'>login</a>.</body></html>\n");
     } else {
       // Add the new user to the users object
       const encryptedPassword = bcrypt.hashSync(req.body.password, 10);
       let userID = generateRandomString();
-      users[userID] = {
-        id: userID,
-        email: email,
-        password: encryptedPassword
-      };
+      users[userID] = { id: userID, email: email, password: encryptedPassword };
       let user = users[userID];
       user_id = user["id"];
-      let templateVars = {
-        user_id: user_id
-      }
+      let templateVars = { user_id: user_id }
       // Set user_id cookie and redirect
       res.cookie("user_id", user_id);
       res.redirect("/urls");
