@@ -216,13 +216,17 @@ app.post("/register", (req, res) => {
     } else {
       // Add the new user to the users object
       const encryptedPassword = bcrypt.hashSync(req.body.password, 10);
-      let userID = generateRandomString();
-      users[userID] = { id: userID, email: email, password: encryptedPassword };
-      let user = users[userID];
-      user_id = user["id"];
-      let templateVars = { user_id: user_id }
+      let user_id = generateRandomString();
+      users[user_id] = { id: user_id, email: email, password: encryptedPassword };
+      console.log(users);
+      let user = users[user_id];
+      //user_id = user["id"];
+      console.log("user_id:", user_id);
+
       // Set user_id cookie and redirect
       res.cookie("user_id", user_id);
+      let templateVars = { id: user_id, email: email };
+      console.log(templateVars);
       res.redirect("/urls");
   }
 });

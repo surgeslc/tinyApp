@@ -4,16 +4,28 @@
 <title>Tiny App</title>
 
 <div>
-  <nav>
-    <ul>
-      <li><a href="/">Home</a></li>
-    </ul>
-  </nav>
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">
+                <span class="glyphicon glyphicon glyphicon-tree-deciduous"></span>
+                TinyApp
+            </a>
+        </div>
+
+        <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+<!--        <li><a href="/about">About</a></li>-->
+        </ul>
+
+    </div>
+</nav>
   <h3>TinyApp</h3>
-  <% if (typeof user_id === "undefined") { %>
+  <% if (typeof users === "undefined") { %>
     <h4>Please <a href="/login">Login</a> or <a href="/register">Register</a></h4>
   <% } else{ %>
-      <h4>User is: <%= user_id %> </h4>
+      <h4>User is: <%= email %> </h4>
       <form action="/logout" method="POST">
         <input type="submit" value="Logout">
       </form>
